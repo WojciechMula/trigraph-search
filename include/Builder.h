@@ -34,7 +34,7 @@ public:
 
 private:
     void add(size_t row, const std::string& str) {
-        if (str.size() < 4) {
+        if (str.size() < 3) {
             return;
         }
 
