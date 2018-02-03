@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <cstring>
+#include <optional>
 
 class bitvector {
 
@@ -88,14 +88,21 @@ private:
         , data(new uint64_t[chunks_count(m_size)]) {}
 
 public:
-    static bitvector bit_and(const bitvector& v1, const bitvector& v2) {
+    static std::optional<bitvector> bit_and(const bitvector& v1, const bitvector& v2) {
         assert(v1.size() == v2.size());
 
         bitvector result(v1.size(), true);
 
         const size_t n = chunks_count(result.m_size);
+        size_t zeros = 0;
         for (size_t i=0; i < n; i++) {
-            result.data[i] = v1.data[i] & v2.data[i];
+            const uint64_t tmp = v1.data[i] & v2.data[i];
+            result.data[i] = tmp;
+            zeros += (tmp == 0);
+        }
+
+        if (zeros == n) {
+            return std::nullopt;
         }
 
         return result;

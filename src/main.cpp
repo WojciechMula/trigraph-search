@@ -111,5 +111,4 @@ int main() {
 
     //test_performance("NaiveDB", naive_db, words);
     test_performance("IndexedDB<bitvector>", indexed_db, words);
-    //compare(naive_db, indexed_db, words);
 }

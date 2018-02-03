@@ -79,8 +79,14 @@ protected:
                 first = &it->second;
             } else if (!result.has_value()) {
                 result = bitvector_type::bit_and(*first, it->second);
+                if (!result.has_value()) {
+                    return std::nullopt;
+                }
             } else {
                 result = bitvector_type::bit_and(result.value(), it->second);
+                if (!result.has_value()) {
+                    return std::nullopt;
+                }
             }
         }
 
