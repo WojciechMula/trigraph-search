@@ -107,5 +107,19 @@ public:
 
         return result;
     }
+
+    static bool bit_and_inplace(bitvector& v1, const bitvector& v2) {
+        assert(v1.size() == v2.size());
+
+        const size_t n = chunks_count(v1.m_size);
+        size_t zeros = 0;
+        for (size_t i=0; i < n; i++) {
+            const uint64_t tmp = v1.data[i] & v2.data[i];
+            v1.data[i] = tmp;
+            zeros += (tmp == 0);
+        }
+
+        return (zeros != n);
+    }
 };
 

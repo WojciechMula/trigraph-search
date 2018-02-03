@@ -83,8 +83,8 @@ protected:
                     return std::nullopt;
                 }
             } else {
-                result = bitvector_type::bit_and(result.value(), it->second);
-                if (!result.has_value()) {
+                bool nonempty = bitvector_type::bit_and_inplace(result.value(), it->second);
+                if (!nonempty) {
                     return std::nullopt;
                 }
             }
