@@ -42,8 +42,8 @@ Collection load(const char* path) {
 
 void test_performance(const char* name, const DB& db, const Collection& words) {
 
-    printf("searching %s...", name); fflush(stdout);
-    volatile int k = 1;
+    printf("searching in %s... ", name); fflush(stdout);
+    volatile int k = 10;
     volatile int result = 0;
     const auto t1 = gettime();
     while (k--) {
@@ -91,7 +91,7 @@ int main() {
     Collection words;
 
     {
-        printf("loading..."); fflush(stdout);
+        printf("loading... "); fflush(stdout);
         const auto t1 = gettime();
         input = load("data.txt"); 
         const auto t2 = gettime();
@@ -99,7 +99,7 @@ int main() {
     }
 
     {
-        printf("loading..."); fflush(stdout);
+        printf("loading... "); fflush(stdout);
         const auto t1 = gettime();
         words = load("words.txt"); 
         const auto t2 = gettime();
@@ -109,7 +109,7 @@ int main() {
     const NaiveDB naive_db(input);
     const auto indexed_db = create<bitvector>(input);
 
-    test_performance("NaiveDB", naive_db, words);
+    //test_performance("NaiveDB", naive_db, words);
     test_performance("IndexedDB<bitvector>", indexed_db, words);
     //compare(naive_db, indexed_db, words);
 }
