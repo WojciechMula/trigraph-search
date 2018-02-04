@@ -53,7 +53,7 @@ protected:
         if (it == index.map.end()) {
             return 0;
         } else {
-            return it->second.cardinality();
+            return it->second.bv.cardinality();
         }
     }
 
@@ -76,14 +76,14 @@ protected:
             }
 
             if (first == nullptr) {
-                first = &it->second;
+                first = &it->second.bv;
             } else if (!result.has_value()) {
-                result = bitvector_type::bit_and(*first, it->second);
+                result = bitvector_type::bit_and(*first, it->second.bv);
                 if (!result.has_value()) {
                     return std::nullopt;
                 }
             } else {
-                bool nonempty = bitvector_type::bit_and_inplace(result.value(), it->second);
+                bool nonempty = bitvector_type::bit_and_inplace(result.value(), it->second.bv);
                 if (!nonempty) {
                     return std::nullopt;
                 }

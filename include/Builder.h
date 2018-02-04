@@ -19,6 +19,7 @@ public:
         : size(size_) {}
 
     index_type&& capture() {
+        index.update_first_and_last();
         return std::move(index);
     }
 
@@ -51,7 +52,7 @@ private:
                 it = index.map.insert({trigram, std::move(bv)}).first;
             }
 
-            it->second.set(row);
+            it->second.bv.set(row);
         }
     }
 };
