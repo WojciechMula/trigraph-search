@@ -24,6 +24,9 @@ unsigned gettime() {
 Collection load(const char* path) {
     Collection coll;
 
+    printf("loading %s... ", path); fflush(stdout);
+    const auto t1 = gettime();
+
     std::fstream f;
     f.exceptions(std::ifstream::badbit);
     f.open(path);
@@ -36,6 +39,9 @@ Collection load(const char* path) {
         }
     }
 
+    const auto t2 = gettime();
+    printf("%lu rows, %d ms\n", coll.size(), t2 - t1);
+
     return coll;
 }
 
@@ -43,7 +49,7 @@ Collection load(const char* path) {
 void test_performance(const char* name, const DB& db, const Collection& words) {
 
     printf("searching in %s... ", name); fflush(stdout);
-    volatile int k = 10;
+    volatile int k = 1;
     volatile int result = 0;
     const auto t1 = gettime();
     while (k--) {
@@ -85,26 +91,18 @@ void compare(const DB& db1, const DB& db2, Collection& words) {
 }
 
 
-int main() {
+int main(int argc, char* argv[]) {
+
+    if (argc < 2) {
+        puts("Usage: test db-words.txt search-words.txt");
+        return EXIT_FAILURE;
+    }
 
     Collection input;
     Collection words;
 
-    {
-        printf("loading... "); fflush(stdout);
-        const auto t1 = gettime();
-        input = load("data.txt"); 
-        const auto t2 = gettime();
-        printf("%lu rows, %d ms\n", input.size(), t2 - t1);
-    }
-
-    {
-        printf("loading... "); fflush(stdout);
-        const auto t1 = gettime();
-        words = load("words.txt"); 
-        const auto t2 = gettime();
-        printf("%lu rows, %d ms\n", words.size(), t2 - t1);
-    }
+    input = load(argv[1]);
+    words = load(argv[2]);
 
     const NaiveDB naive_db(input);
     const auto indexed_db = create<bitvector>(input);
@@ -112,4 +110,6 @@ int main() {
     //test_performance("NaiveDB", naive_db, words);
     test_performance("IndexedDB<bitvector>", indexed_db, words);
     //compare(naive_db, indexed_db, words);
+
+    return EXIT_SUCCESS;
 }
