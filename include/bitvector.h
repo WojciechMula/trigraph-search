@@ -65,9 +65,8 @@ public:
     }
 
     size_t cardinality() const {
-        size_t n = chunks_count(m_size);
         size_t k = 0;
-        for (size_t i=0; i < n; i++) {
+        for (size_t i=non_empty_chunk.first; i <= non_empty_chunk.last; i++) {
             k += __builtin_popcountll(data[i]);
         }
 

@@ -10,7 +10,7 @@ public:
     using bitvector_type = BITVECTOR;
     using index_type = Index<bitvector_type>;
 
-private:
+protected:
     const index_type index;
 
 public:

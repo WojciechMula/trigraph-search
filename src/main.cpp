@@ -8,6 +8,7 @@
 #include "DB.h"
 #include "NaiveDB.h"
 #include "IndexedDB.h"
+#include "IndexedDB2.h"
 
 #include "bitvector.h"
 
@@ -79,6 +80,23 @@ IndexedDB<BITVECTOR> create(const Collection& collection) {
 }
 
 
+template <typename BITVECTOR>
+IndexedDB2<BITVECTOR> create2(const Collection& collection) {
+
+    Builder<BITVECTOR> builder(collection.size());
+
+    {
+        printf("building..."); fflush(stdout);
+        const auto t1 = gettime();
+        builder.add(collection);
+        const auto t2 = gettime();
+        printf("OK, %d ms\n", t2 - t1);
+    }
+
+    return {collection, builder.capture()};
+}
+
+
 void compare(const DB& db1, const DB& db2, Collection& words) {
 
     for (const auto& word: words) {
@@ -106,9 +124,11 @@ int main(int argc, char* argv[]) {
 
     const NaiveDB naive_db(input);
     const auto indexed_db = create<bitvector>(input);
+    const auto indexed_db_2 = create2<bitvector>(input);
 
     //test_performance("NaiveDB", naive_db, words);
     test_performance("IndexedDB<bitvector>", indexed_db, words);
+    test_performance("IndexedDB2<bitvector>", indexed_db_2, words);
     //compare(naive_db, indexed_db, words);
 
     return EXIT_SUCCESS;

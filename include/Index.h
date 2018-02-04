@@ -9,16 +9,28 @@ public:
     using bitvector_type = BITVECTOR;
 
     struct Item {
-        size_t first;
-        size_t last;
+        mutable std::optional<size_t> cardinality;
         bitvector_type bv;
 
         Item(bitvector_type&& bv_)
             : bv(std::move(bv_)) {}
+
+        size_t get_cardinality() const {
+            if (!cardinality.has_value()) {
+                cardinality = bv.cardinality();
+            }
+
+            return cardinality.value();
+        }
     };
 
     using map_type = std::unordered_map<uint32_t, Item>;
     map_type map;
+
+public:
+    size_t size() const {
+        return map.size();
+    }
 
 public:
     void update_first_and_last() {
