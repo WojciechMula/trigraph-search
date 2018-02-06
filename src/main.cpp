@@ -11,6 +11,7 @@
 #include "IndexedDB2.h"
 
 #include "bitvector_tracking.h"
+#include "bitvector_naive.h"
 
 #include <sys/time.h>
 
@@ -126,14 +127,22 @@ int main(int argc, char* argv[]) {
         repeat_count = std::max(repeat_count, atoi(argv[3]));
     }
 
-    const NaiveDB naive_db(input);
-    const auto indexed_db = create<bitvector_tracking>(input);
-    const auto indexed_db_2 = create2<bitvector_tracking>(input);
-
-    //test_performance("NaiveDB", naive_db, words);
-    test_performance("IndexedDB<bitvector_tracking>", indexed_db, words, repeat_count);
-    test_performance("IndexedDB2<bitvector_tracking>", indexed_db_2, words, repeat_count);
-    //compare(naive_db, indexed_db, words);
+    {
+        const auto db = create<bitvector_tracking>(input);
+        test_performance("IndexedDB<bitvector_tracking>", db, words, repeat_count);
+    }
+    {
+        const auto db = create<bitvector_naive>(input);
+        test_performance("IndexedDB<bitvector_naive>", db, words, repeat_count);
+    }
+    {
+        const auto db = create2<bitvector_tracking>(input);
+        test_performance("IndexedDB2<bitvector_tracking>", db, words, repeat_count);
+    }
+    {
+        const auto db = create2<bitvector_naive>(input);
+        test_performance("IndexedDB2<bitvector_naive>", db, words, repeat_count);
+    }
 
     return EXIT_SUCCESS;
 }

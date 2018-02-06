@@ -35,7 +35,7 @@ public:
 public:
     void update_first_and_last() {
         for (auto& item: map) {
-            item.second.bv.update_non_empty_chunk_idx();
+            item.second.bv.update_internal_structures();
         }
     }
 };

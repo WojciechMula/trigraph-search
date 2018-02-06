@@ -90,7 +90,7 @@ public:
         }
     }
 
-    void update_non_empty_chunk_idx() {
+    void update_internal_structures() {
 
         bool set_first = true;
 
