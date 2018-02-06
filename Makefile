@@ -17,8 +17,10 @@ QUERY_FILE_ALL=enwords-all.txt
 QUERY_FILE_LIMIT=1000 # of around 90 thousand
 QUERY_FILE=words.txt
 
+REPEAT_COUNT=10
+
 run_tests: test $(DATA_FILE) $(QUERY_FILE)
-	./test $(DATA_FILE) $(QUERY_FILE)
+	./test $(DATA_FILE) $(QUERY_FILE) $(REPEAT_COUNT)
 
 test: src/main.cpp $(HEADERS) $(SRC)
 	$(CXX) $(FLAGS) src/main.cpp $(SRC) -o $@

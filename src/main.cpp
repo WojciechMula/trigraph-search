@@ -47,10 +47,10 @@ Collection load(const char* path) {
 }
 
 
-void test_performance(const char* name, const DB& db, const Collection& words) {
+void test_performance(const char* name, const DB& db, const Collection& words, int repeat_count) {
 
-    printf("searching in %s... ", name); fflush(stdout);
-    volatile int k = 1;
+    printf("searching in %s (%d times)... ", name, repeat_count); fflush(stdout);
+    volatile int k = repeat_count;
     volatile int result = 0;
     const auto t1 = gettime();
     while (k--) {
@@ -121,14 +121,18 @@ int main(int argc, char* argv[]) {
 
     input = load(argv[1]);
     words = load(argv[2]);
+    int repeat_count = 1;
+    if (argc >= 4) {
+        repeat_count = std::max(repeat_count, atoi(argv[3]));
+    }
 
     const NaiveDB naive_db(input);
     const auto indexed_db = create<bitvector>(input);
     const auto indexed_db_2 = create2<bitvector>(input);
 
     //test_performance("NaiveDB", naive_db, words);
-    test_performance("IndexedDB<bitvector>", indexed_db, words);
-    test_performance("IndexedDB2<bitvector>", indexed_db_2, words);
+    test_performance("IndexedDB<bitvector>", indexed_db, words, repeat_count);
+    test_performance("IndexedDB2<bitvector>", indexed_db_2, words, repeat_count);
     //compare(naive_db, indexed_db, words);
 
     return EXIT_SUCCESS;
