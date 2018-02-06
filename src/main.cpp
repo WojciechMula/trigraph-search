@@ -10,7 +10,7 @@
 #include "IndexedDB.h"
 #include "IndexedDB2.h"
 
-#include "bitvector.h"
+#include "bitvector_tracking.h"
 
 #include <sys/time.h>
 
@@ -127,12 +127,12 @@ int main(int argc, char* argv[]) {
     }
 
     const NaiveDB naive_db(input);
-    const auto indexed_db = create<bitvector>(input);
-    const auto indexed_db_2 = create2<bitvector>(input);
+    const auto indexed_db = create<bitvector_tracking>(input);
+    const auto indexed_db_2 = create2<bitvector_tracking>(input);
 
     //test_performance("NaiveDB", naive_db, words);
-    test_performance("IndexedDB<bitvector>", indexed_db, words, repeat_count);
-    test_performance("IndexedDB2<bitvector>", indexed_db_2, words, repeat_count);
+    test_performance("IndexedDB<bitvector_tracking>", indexed_db, words, repeat_count);
+    test_performance("IndexedDB2<bitvector_tracking>", indexed_db_2, words, repeat_count);
     //compare(naive_db, indexed_db, words);
 
     return EXIT_SUCCESS;

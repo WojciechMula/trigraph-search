@@ -3,7 +3,7 @@
 #include <memory>
 #include <optional>
 
-class bitvector {
+class bitvector_tracking {
 
 protected:
     size_t m_size;
@@ -19,18 +19,18 @@ protected:
     }
 
 public:
-    bitvector(size_t n) : bitvector(n, true) {
+    bitvector_tracking(size_t n) : bitvector_tracking(n, true) {
         memset(data, 0, chunks_count(m_size) * sizeof(uint64_t));
     }
 
-    bitvector(const bitvector& bv)
-        : bitvector(bv.m_size, true) {
+    bitvector_tracking(const bitvector_tracking& bv)
+        : bitvector_tracking(bv.m_size, true) {
 
         non_empty_chunk = bv.non_empty_chunk;
         memcpy(data, bv.data, chunks_count(m_size) * sizeof(uint64_t));
     }
 
-    bitvector(bitvector&& bv)
+    bitvector_tracking(bitvector_tracking&& bv)
         : m_size(bv.m_size)
         , data(bv.data)
         , non_empty_chunk(bv.non_empty_chunk) {
@@ -38,7 +38,7 @@ public:
         bv.data = nullptr;
     }
 
-    bitvector& operator=(bitvector&& bv) {
+    bitvector_tracking& operator=(bitvector_tracking&& bv) {
         delete[] data;
 
         m_size  = bv.m_size;
@@ -48,7 +48,7 @@ public:
         return *this;
     }
 
-    ~bitvector() {
+    ~bitvector_tracking() {
         delete[] data;
     }
 
@@ -110,12 +110,12 @@ public:
     }
 
 private:
-    bitvector(size_t size, bool /**/)
+    bitvector_tracking(size_t size, bool /**/)
         : m_size(size)
         , data(new uint64_t[chunks_count(m_size)]) {}
 
 public:
-    static std::optional<bitvector> bit_and(const bitvector& v1, const bitvector& v2) {
+    static std::optional<bitvector_tracking> bit_and(const bitvector_tracking& v1, const bitvector_tracking& v2) {
         assert(v1.size() == v2.size());
 
         const size_t first = std::max(v1.non_empty_chunk.first, v2.non_empty_chunk.first);
@@ -125,7 +125,7 @@ public:
             return std::nullopt;
         }
 
-        bitvector result(v1.size(), true);
+        bitvector_tracking result(v1.size(), true);
 
         for (size_t i=0; i < first; i++) {
             result.data[i] = 0;
@@ -156,7 +156,7 @@ public:
         return result;
     }
 
-    static bool bit_and_inplace(bitvector& v1, const bitvector& v2) {
+    static bool bit_and_inplace(bitvector_tracking& v1, const bitvector_tracking& v2) {
         assert(v1.size() == v2.size());
 
         const size_t first = std::max(v1.non_empty_chunk.first, v2.non_empty_chunk.first);
