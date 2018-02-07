@@ -99,7 +99,7 @@ protected:
 
         size_t count = 0;
         auto visitor = [&word, &count, this](size_t index) {
-            if (rows[index].find(word) != std::string::npos) {
+            if (std::strstr(rows[index].c_str(), word.c_str())) {
                 count += 1;
             }
         };
