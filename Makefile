@@ -19,11 +19,14 @@ QUERY_FILE=words.txt
 
 REPEAT_COUNT=3
 
-run_tests: test $(DATA_FILE) $(QUERY_FILE)
-	./test $(DATA_FILE) $(QUERY_FILE) $(REPEAT_COUNT)
+run_perftest: perftest $(DATA_FILE) $(QUERY_FILE)
+	./$< $(DATA_FILE) $(QUERY_FILE) $(REPEAT_COUNT)
 
-test: src/main.cpp $(HEADERS) $(SRC)
+perftest: src/main.cpp $(HEADERS) $(SRC)
 	$(CXX) $(FLAGS) src/main.cpp $(SRC) -o $@
+
+run_unittests: unittests
+	./$<
 
 unittests: $(HEADERS) tests/*.cpp
 	$(CXX) $(FLAGS) tests/bitvector_sparse_tests.cpp -o $@
@@ -48,4 +51,4 @@ $(QUERY_FILE): $(QUERY_FILE_ALL)
 	mv $(TMPFILE) $@
 
 clean:
-	$(RM) test
+	$(RM) perftest unittests

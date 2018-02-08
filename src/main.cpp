@@ -65,7 +65,7 @@ void test_performance(const char* name, const DB& db, const Collection& words, i
         const uint64_t t2 = gettime();
         best_time = std::min(best_time, t2 - t1);
     }
-    printf("%d match(es), %d ms\n", result, best_time);
+    printf("%d match(es), %lu ms\n", result, best_time);
 }
 
 

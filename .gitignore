@@ -3,5 +3,5 @@
 perf.*
 
 # executables
-test
+perftest
 unittests
