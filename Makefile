@@ -11,13 +11,13 @@ SHUF=./predictable_shuf.py
 
 DATA_FILE_ALL=data-all.txt
 DATA_FILE=data.txt
-DATA_FILE_LIMIT=50000 # of around 3.2 million
+DATA_FILE_LIMIT=200000 # of around 3.2 million
 
 QUERY_FILE_ALL=enwords-all.txt
 QUERY_FILE_LIMIT=1000 # of around 90 thousand
 QUERY_FILE=words.txt
 
-REPEAT_COUNT=10
+REPEAT_COUNT=3
 
 run_tests: test $(DATA_FILE) $(QUERY_FILE)
 	./test $(DATA_FILE) $(QUERY_FILE) $(REPEAT_COUNT)

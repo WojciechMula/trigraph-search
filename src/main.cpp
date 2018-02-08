@@ -1,8 +1,10 @@
 #include <vector>
 #include <string>
-#include <cassert>
 #include <optional>
+#include <limits>
 #include <fstream>
+
+#include <cassert>
 
 #include "Builder.h"
 #include "DB.h"
@@ -12,6 +14,7 @@
 
 #include "bitvector_tracking.h"
 #include "bitvector_naive.h"
+#include "bitvector_sparse.h"
 
 #include <sys/time.h>
 
@@ -53,14 +56,16 @@ void test_performance(const char* name, const DB& db, const Collection& words, i
     printf("searching in %s (%d times)... ", name, repeat_count); fflush(stdout);
     volatile int k = repeat_count;
     volatile int result = 0;
-    const auto t1 = gettime();
+    uint64_t best_time = std::numeric_limits<uint64_t>::max();
     while (k--) {
+        const uint64_t t1 = gettime();
         for (const auto& word: words) {
             result += db.matches(word);
         }
+        const uint64_t t2 = gettime();
+        best_time = std::min(best_time, t2 - t1);
     }
-    const auto t2 = gettime();
-    printf("%d match(es), %d ms\n", result, t2 - t1);
+    printf("%d match(es), %d ms\n", result, best_time);
 }
 
 
@@ -136,12 +141,21 @@ int main(int argc, char* argv[]) {
         test_performance("IndexedDB<bitvector_naive>", db, words, repeat_count);
     }
     {
+        const auto db = create<bitvector_sparse>(input);
+        test_performance("IndexedDB<bitvector_sparse>", db, words, repeat_count);
+    }
+
+    {
         const auto db = create2<bitvector_tracking>(input);
         test_performance("IndexedDB2<bitvector_tracking>", db, words, repeat_count);
     }
     {
         const auto db = create2<bitvector_naive>(input);
         test_performance("IndexedDB2<bitvector_naive>", db, words, repeat_count);
+    }
+    {
+        const auto db = create2<bitvector_sparse>(input);
+        test_performance("IndexedDB2<bitvector_sparse>", db, words, repeat_count);
     }
 
     return EXIT_SUCCESS;
