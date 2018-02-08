@@ -1,4 +1,7 @@
 *.txt
 *.gz
 perf.*
+
+# executables
 test
+unittests

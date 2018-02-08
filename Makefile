@@ -25,6 +25,9 @@ run_tests: test $(DATA_FILE) $(QUERY_FILE)
 test: src/main.cpp $(HEADERS) $(SRC)
 	$(CXX) $(FLAGS) src/main.cpp $(SRC) -o $@
 
+unittests: $(HEADERS) tests/*.cpp
+	$(CXX) $(FLAGS) tests/bitvector_sparse_tests.cpp -o $@
+
 worldcitiespop.txt.gz:
 	wget $(URL)
 
