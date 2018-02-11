@@ -15,6 +15,7 @@
 #include "bitvector_tracking.h"
 #include "bitvector_naive.h"
 #include "bitvector_sparse.h"
+#include "vector_facade.h"
 
 #include <sys/time.h>
 
@@ -132,6 +133,10 @@ int main(int argc, char* argv[]) {
         repeat_count = std::max(repeat_count, atoi(argv[3]));
     }
 
+    {
+        const auto db = create<vector_facade>(input);
+        test_performance("IndexedDB<vector_facade>", db, words, repeat_count);
+    }
     {
         const auto db = create<bitvector_tracking>(input);
         test_performance("IndexedDB<bitvector_tracking>", db, words, repeat_count);
