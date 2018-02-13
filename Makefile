@@ -1,10 +1,11 @@
 .PHONY: clean
 .PHONY: run_tests
 
-FLAGS=$(CXXFLAGS) -Wall -Wextra -pedantic -std=c++17 -O3 -g -Iinclude
+FLAGS=$(CXXFLAGS) -Wall -Wextra -pedantic -std=c++17 -O3 -g -Iinclude -Iroaring
 
 HEADERS=include/*.h
 SRC=
+ROARING_ALL=roaring/roaring.h roaring/roaring.hh roaring/roaring.c 
 
 URL=http://download.maxmind.com/download/worldcities/worldcitiespop.txt.gz
 SHUF=./predictable_shuf.py
@@ -22,7 +23,7 @@ REPEAT_COUNT=3
 run_perftest: perftest $(DATA_FILE) $(QUERY_FILE)
 	./$< $(DATA_FILE) $(QUERY_FILE) $(REPEAT_COUNT)
 
-perftest: src/main.cpp $(HEADERS) $(SRC)
+perftest: src/main.cpp $(HEADERS) $(SRC) $(ROARING_ALL)
 	$(CXX) $(FLAGS) src/main.cpp $(SRC) -o $@
 
 run_unittests: unittests
@@ -49,6 +50,9 @@ $(DATA_FILE): $(DATA_FILE_ALL)
 $(QUERY_FILE): $(QUERY_FILE_ALL)
 	$(SHUF) $^ $(QUERY_FILE_LIMIT) > $(TMPFILE)
 	mv $(TMPFILE) $@
+
+$(ROARING_ALL):
+	cd roaring && ./amalgamation.sh
 
 clean:
 	$(RM) perftest unittests

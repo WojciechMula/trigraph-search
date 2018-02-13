@@ -6,6 +6,8 @@
 
 #include <cassert>
 
+#include <roaring.c>
+
 #include "Builder.h"
 #include "DB.h"
 #include "NaiveDB.h"
@@ -16,6 +18,7 @@
 #include "bitvector_naive.h"
 #include "bitvector_sparse.h"
 #include "vector_facade.h"
+#include "roaring_facade.h"
 
 #include <sys/time.h>
 
@@ -133,6 +136,10 @@ int main(int argc, char* argv[]) {
         repeat_count = std::max(repeat_count, atoi(argv[3]));
     }
 
+    {
+        const auto db = create<roaring_facade>(input);
+        test_performance("IndexedDB<roaring_facade>", db, words, repeat_count);
+    }
     {
         const auto db = create<vector_facade>(input);
         test_performance("IndexedDB<vector_facade>", db, words, repeat_count);
