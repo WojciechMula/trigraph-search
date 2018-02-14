@@ -15,7 +15,7 @@ DATA_FILE=data.txt
 DATA_FILE_LIMIT=200000 # of around 3.2 million
 
 QUERY_FILE_ALL=enwords-all.txt
-QUERY_FILE_LIMIT=1000 # of around 90 thousand
+QUERY_FILE_LIMIT=10000 # of around 90 thousand
 QUERY_FILE=words.txt
 
 REPEAT_COUNT=3
