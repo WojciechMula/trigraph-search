@@ -5,6 +5,7 @@
 #include <fstream>
 
 #include <cassert>
+#include <cstring>
 
 #include <roaring.c>
 
@@ -73,27 +74,10 @@ void test_performance(const char* name, const DB& db, const Collection& words, i
 }
 
 
-template <typename BITVECTOR>
-IndexedDBAll<BITVECTOR> create(const Collection& collection) {
+template <typename DBTYPE>
+DBTYPE create(const Collection& collection) {
 
-    Builder<BITVECTOR> builder(collection.size());
-
-    {
-        printf("building..."); fflush(stdout);
-        const auto t1 = gettime();
-        builder.add(collection);
-        const auto t2 = gettime();
-        printf("OK, %d ms\n", t2 - t1);
-    }
-
-    return {collection, builder.capture()};
-}
-
-
-template <typename BITVECTOR>
-IndexedDBSmallest<BITVECTOR> create2(const Collection& collection) {
-
-    Builder<BITVECTOR> builder(collection.size());
+    Builder<typename DBTYPE::bitvector_type> builder(collection.size());
 
     {
         printf("building..."); fflush(stdout);
@@ -122,7 +106,7 @@ void compare(const DB& db1, const DB& db2, Collection& words) {
 int main(int argc, char* argv[]) {
 
     if (argc < 2) {
-        puts("Usage: test db-words.txt search-words.txt");
+        puts("Usage: test db-words.txt search-words.txt [repeats count [test name...]]");
         return EXIT_FAILURE;
     }
 
@@ -136,39 +120,37 @@ int main(int argc, char* argv[]) {
         repeat_count = std::max(repeat_count, atoi(argv[3]));
     }
 
-    {
-        const auto db = create<roaring_facade>(input);
-        test_performance("IndexedDBAll<roaring_facade>", db, words, repeat_count);
-    }
-    {
-        const auto db = create<vector_facade>(input);
-        test_performance("IndexedDBAll<vector_facade>", db, words, repeat_count);
-    }
-    {
-        const auto db = create<bitvector_tracking>(input);
-        test_performance("IndexedDBAll<bitvector_tracking>", db, words, repeat_count);
-    }
-    {
-        const auto db = create<bitvector_naive>(input);
-        test_performance("IndexedDBAll<bitvector_naive>", db, words, repeat_count);
-    }
-    {
-        const auto db = create<bitvector_sparse>(input);
-        test_performance("IndexedDBAll<bitvector_sparse>", db, words, repeat_count);
+    auto enabled = [&argc, &argv](const char* name) {
+        if (argc <= 4) {
+            return true; // no explicit options - all tests are enabled
+        }
+        for (int i = argc + 4; i < argc; i++) {
+            if (strcasecmp(argv[i], name) == 0) {
+                return true;
+            }
+        }
+
+        return false;
+
+    };
+
+#define TEST(KEYWORD, TYPE)                                 \
+    if (enabled(KEYWORD)) {                                 \
+        const auto db = create<TYPE>(input);                \
+        test_performance(#TYPE, db, words, repeat_count);   \
     }
 
-    {
-        const auto db = create2<bitvector_tracking>(input);
-        test_performance("IndexedDBSmallest<bitvector_tracking>", db, words, repeat_count);
-    }
-    {
-        const auto db = create2<bitvector_naive>(input);
-        test_performance("IndexedDBSmallest<bitvector_naive>", db, words, repeat_count);
-    }
-    {
-        const auto db = create2<bitvector_sparse>(input);
-        test_performance("IndexedDBSmallest<bitvector_sparse>", db, words, repeat_count);
-    }
+    TEST("roaring",  IndexedDBAll<roaring_facade>);
+    TEST("vector",   IndexedDBAll<vector_facade>);
+    TEST("naive",    IndexedDBAll<bitvector_naive>);
+    TEST("tracking", IndexedDBAll<bitvector_tracking>);
+    TEST("sparse",   IndexedDBAll<bitvector_sparse>);
+
+    TEST("roaring",  IndexedDBSmallest<roaring_facade>);
+    TEST("vector",   IndexedDBSmallest<vector_facade>);
+    TEST("naive",    IndexedDBSmallest<bitvector_naive>);
+    TEST("tracking", IndexedDBSmallest<bitvector_tracking>);
+    TEST("sparse",   IndexedDBSmallest<bitvector_sparse>);
 
     return EXIT_SUCCESS;
 }
