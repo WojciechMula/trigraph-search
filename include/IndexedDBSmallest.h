@@ -1,18 +1,19 @@
 #pragma once
 
+#include "IndexedDBAll.h"
 #include <limits>
 
 template <typename BITVECTOR>
-class IndexedDB2: public IndexedDB<BITVECTOR> {
+class IndexedDBSmallest: public IndexedDBAll<BITVECTOR> {
 
-    using super = IndexedDB<BITVECTOR>;
+    using super = IndexedDBAll<BITVECTOR>;
 
 public:
     using bitvector_type = typename super::bitvector_type;
     using index_type = typename super::index_type;
 
 public:
-    IndexedDB2(const Collection& rows_, index_type&& index_)
+    IndexedDBSmallest(const Collection& rows_, index_type&& index_)
         : super(rows_, std::move(index_)) {}
 
 public:

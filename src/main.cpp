@@ -11,8 +11,8 @@
 #include "Builder.h"
 #include "DB.h"
 #include "NaiveDB.h"
-#include "IndexedDB.h"
-#include "IndexedDB2.h"
+#include "IndexedDBAll.h"
+#include "IndexedDBSmallest.h"
 
 #include "bitvector_tracking.h"
 #include "bitvector_naive.h"
@@ -74,7 +74,7 @@ void test_performance(const char* name, const DB& db, const Collection& words, i
 
 
 template <typename BITVECTOR>
-IndexedDB<BITVECTOR> create(const Collection& collection) {
+IndexedDBAll<BITVECTOR> create(const Collection& collection) {
 
     Builder<BITVECTOR> builder(collection.size());
 
@@ -91,7 +91,7 @@ IndexedDB<BITVECTOR> create(const Collection& collection) {
 
 
 template <typename BITVECTOR>
-IndexedDB2<BITVECTOR> create2(const Collection& collection) {
+IndexedDBSmallest<BITVECTOR> create2(const Collection& collection) {
 
     Builder<BITVECTOR> builder(collection.size());
 
@@ -138,36 +138,36 @@ int main(int argc, char* argv[]) {
 
     {
         const auto db = create<roaring_facade>(input);
-        test_performance("IndexedDB<roaring_facade>", db, words, repeat_count);
+        test_performance("IndexedDBAll<roaring_facade>", db, words, repeat_count);
     }
     {
         const auto db = create<vector_facade>(input);
-        test_performance("IndexedDB<vector_facade>", db, words, repeat_count);
+        test_performance("IndexedDBAll<vector_facade>", db, words, repeat_count);
     }
     {
         const auto db = create<bitvector_tracking>(input);
-        test_performance("IndexedDB<bitvector_tracking>", db, words, repeat_count);
+        test_performance("IndexedDBAll<bitvector_tracking>", db, words, repeat_count);
     }
     {
         const auto db = create<bitvector_naive>(input);
-        test_performance("IndexedDB<bitvector_naive>", db, words, repeat_count);
+        test_performance("IndexedDBAll<bitvector_naive>", db, words, repeat_count);
     }
     {
         const auto db = create<bitvector_sparse>(input);
-        test_performance("IndexedDB<bitvector_sparse>", db, words, repeat_count);
+        test_performance("IndexedDBAll<bitvector_sparse>", db, words, repeat_count);
     }
 
     {
         const auto db = create2<bitvector_tracking>(input);
-        test_performance("IndexedDB2<bitvector_tracking>", db, words, repeat_count);
+        test_performance("IndexedDBSmallest<bitvector_tracking>", db, words, repeat_count);
     }
     {
         const auto db = create2<bitvector_naive>(input);
-        test_performance("IndexedDB2<bitvector_naive>", db, words, repeat_count);
+        test_performance("IndexedDBSmallest<bitvector_naive>", db, words, repeat_count);
     }
     {
         const auto db = create2<bitvector_sparse>(input);
-        test_performance("IndexedDB2<bitvector_sparse>", db, words, repeat_count);
+        test_performance("IndexedDBSmallest<bitvector_sparse>", db, words, repeat_count);
     }
 
     return EXIT_SUCCESS;

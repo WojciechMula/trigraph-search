@@ -5,7 +5,7 @@
 #include <functional>
 
 template <typename BITVECTOR>
-class IndexedDB: public NaiveDB {
+class IndexedDBAll: public NaiveDB {
 public:
     using bitvector_type = BITVECTOR;
     using index_type = Index<bitvector_type>;
@@ -14,7 +14,7 @@ protected:
     const index_type index;
 
 public:
-    IndexedDB(const Collection& rows_, index_type&& index_)
+    IndexedDBAll(const Collection& rows_, index_type&& index_)
         : NaiveDB(rows_)
         , index(std::move(index_)) {}
 
