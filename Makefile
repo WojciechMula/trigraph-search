@@ -1,5 +1,5 @@
 .PHONY: clean
-.PHONY: run_tests
+.PHONY: help
 
 FLAGS=$(CXXFLAGS) -Wall -Wextra -pedantic -std=c++17 -O3 -g -Iinclude -Iroaring
 
@@ -19,6 +19,11 @@ QUERY_FILE_LIMIT=1000 # of around 90 thousand
 QUERY_FILE=words.txt
 
 REPEAT_COUNT=3
+
+help:
+	@echo "Targets"
+	@echo "* run_unittests - unit tests"
+	@echo "* run_perftest  - performance tests"
 
 run_perftest: perftest $(DATA_FILE) $(QUERY_FILE)
 	./$< $(DATA_FILE) $(QUERY_FILE) $(REPEAT_COUNT)
