@@ -10,6 +10,10 @@
 
 class bitvector_sparse {
 
+public:
+    static constexpr bool custom_filter = false;
+
+private:
     static constexpr size_t block_size = 8; // in 64-bit units
     static constexpr size_t bits_in_chunk = 64;
     static constexpr size_t bits_in_block = bits_in_chunk * block_size;

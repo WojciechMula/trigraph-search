@@ -5,6 +5,9 @@
 
 class bitvector_naive {
 
+public:
+    static constexpr bool custom_filter = false;
+
 protected:
     size_t m_size;
     uint64_t* data;

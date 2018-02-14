@@ -32,11 +32,14 @@ public:
         }
 
         auto bv = get_matches_longer(word);
-        if (bv.has_value()) {
+        if (!bv.has_value())
+            return 0;
+
+        if constexpr (bitvector_type::custom_filter) {
+            return bv.value().filter_out_false_positives(rows, word);
+        } else {
             return filter_out_false_positives(bv.value(), word);
         }
-
-        return 0;
     }
 
 protected:

@@ -4,6 +4,11 @@
 #include <algorithm>
 
 class vector_facade {
+
+public:
+    static constexpr bool custom_filter = false;
+
+private:
     std::vector<uint32_t> indices;
     size_t m_size;
     ssize_t last_set = -1;

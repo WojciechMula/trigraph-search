@@ -7,6 +7,8 @@ class IndexedDB2: public IndexedDB<BITVECTOR> {
 
     using super = IndexedDB<BITVECTOR>;
 
+public:
+    using bitvector_type = typename super::bitvector_type;
     using index_type = typename super::index_type;
 
 public:
@@ -31,7 +33,11 @@ public:
             return 0;
         }
 
-        return super::filter_out_false_positives(it.value()->second.bv, word);
+        if constexpr (bitvector_type::custom_filter) {
+            return it.value()->second.bv.filter_out_false_positives(super::rows, word);
+        } else {
+            return super::filter_out_false_positives(it.value()->second.bv, word);
+        }
     }
 
 protected:

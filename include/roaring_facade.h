@@ -6,8 +6,33 @@
 #include <optional>
 #include <limits>
 
+struct roaring_facade_filter_data final {
+    const Collection& rows;
+    const std::string& word;
+    size_t count;
 
-class roaring_facade {
+    roaring_facade_filter_data(const Collection& rows_, const std::string& word_)
+        : rows(rows_)
+        , word(word_)
+        , count(0) {}
+
+    void update(size_t index) {
+        if (rows[index].find(word) != std::string::npos) {
+            count += 1;
+        }
+    }
+};
+
+bool roaring_facade_filter(uint32_t index, void* ptr) {
+    auto& data = *reinterpret_cast<roaring_facade_filter_data*>(ptr);
+    data.update(index);
+
+    return true;
+}
+
+class roaring_facade final {
+
+private:
     Roaring roaring;
     size_t m_size;
 
@@ -30,11 +55,21 @@ public:
     }
 
     template <typename CALLBACK>
-    void visit(CALLBACK callback) const {
+    void visit(CALLBACK /*callback*/) const {
         // I don't know how to call a template-defined callable
         // inside a C function.
         // this works:   roaring.iterate([](uint32_t, void*){return true;}, nullptr);
         // this doesn't: roaring.iterate([&callback](uint32_t, void*){return true;}, nullptr);
+    }
+
+public:
+    static constexpr bool custom_filter = true;
+
+    size_t filter_out_false_positives(const Collection& rows, const std::string& word) const {
+        roaring_facade_filter_data d(rows, word);
+        roaring.iterate(roaring_facade_filter, &d);
+
+        return d.count;
     }
 
 public:
