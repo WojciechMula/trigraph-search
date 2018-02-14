@@ -42,7 +42,7 @@ Collection load(const char* path) {
 
     while (!f.eof()) {
         std::string str;
-        f >> str;
+        std::getline(f, str);
         if (!str.empty()) {
             coll.emplace_back(std::move(str));
         }
