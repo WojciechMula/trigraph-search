@@ -76,12 +76,19 @@ public:
 
             size_t k = i * 64;
             while (tmp) {
+#if 1
                 if (tmp & 0x1) {
                     callback(k);
                 }
 
                 tmp >>= 1;
                 k += 1;
+#else
+                const uint64_t t = tmp & (~tmp + 1);
+                const uint64_t r = __builtin_ctzll(t);
+                callback(k + r);
+                tmp ^= t;
+#endif
             }
         }
     }
