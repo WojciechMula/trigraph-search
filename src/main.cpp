@@ -124,7 +124,7 @@ int main(int argc, char* argv[]) {
         if (argc <= 4) {
             return true; // no explicit options - all tests are enabled
         }
-        for (int i = argc + 4; i < argc; i++) {
+        for (int i = 3; i < argc; i++) {
             if (strcasecmp(argv[i], name) == 0) {
                 return true;
             }
