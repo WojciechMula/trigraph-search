@@ -110,4 +110,9 @@ protected:
         bv.visit(visitor);
         return count;
     }
+
+    size_t filter_out_false_positives(size_t index, const std::string& word) const {
+
+        return std::strstr(rows[index].c_str(), word.c_str()) != nullptr; 
+    }
 };
