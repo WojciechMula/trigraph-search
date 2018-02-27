@@ -62,6 +62,7 @@ private:
         assert(v1.size() == v2.size());
         
         vector_facade result(v1.size());
+        result.indices.reserve(std::min(v1.cardinality(), v2.cardinality()));
 
         std::set_intersection(v1.indices.begin(), v1.indices.end(),
                               v2.indices.begin(), v2.indices.end(),
