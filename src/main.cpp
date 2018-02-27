@@ -131,7 +131,7 @@ int main(int argc, char* argv[]) {
             return true; // no explicit options - all tests are enabled
         }
         for (int i = 3; i < argc; i++) {
-            if (strcasecmp(argv[i], name) == 0) {
+            if (strstr(name, argv[i])) {
                 return true;
             }
         }
@@ -147,20 +147,20 @@ int main(int argc, char* argv[]) {
     }
 
 #ifdef ROARING
-    TEST("roaring",  IndexedDBAll<roaring_facade>);
+    TEST("roaring-all",  IndexedDBAll<roaring_facade>);
 #endif
-    TEST("vector",   IndexedDBAll<vector_facade>);
-    TEST("naive",    IndexedDBAll<bitvector_naive>);
-    TEST("tracking", IndexedDBAll<bitvector_tracking>);
-    TEST("sparse",   IndexedDBAll<bitvector_sparse>);
+    TEST("vector-all",   IndexedDBAll<vector_facade>);
+    TEST("naive-all",    IndexedDBAll<bitvector_naive>);
+    TEST("tracking-all", IndexedDBAll<bitvector_tracking>);
+    TEST("sparse-all",   IndexedDBAll<bitvector_sparse>);
 
 #ifdef ROARING
-    TEST("roaring",  IndexedDBSmallest<roaring_facade>);
+    TEST("roaring-smallest",  IndexedDBSmallest<roaring_facade>);
 #endif
-    TEST("vector",   IndexedDBSmallest<vector_facade>);
-    TEST("naive",    IndexedDBSmallest<bitvector_naive>);
-    TEST("tracking", IndexedDBSmallest<bitvector_tracking>);
-    TEST("sparse",   IndexedDBSmallest<bitvector_sparse>);
+    TEST("vector-smallest",   IndexedDBSmallest<vector_facade>);
+    TEST("naive-smallest",    IndexedDBSmallest<bitvector_naive>);
+    TEST("tracking-smallest", IndexedDBSmallest<bitvector_tracking>);
+    TEST("sparse-smallest",   IndexedDBSmallest<bitvector_sparse>);
 
     return EXIT_SUCCESS;
 }
