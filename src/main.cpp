@@ -7,7 +7,11 @@
 #include <cassert>
 #include <cstring>
 
-#include <roaring.c>
+#define ROARING
+
+#ifdef ROARING
+#   include <roaring.c>
+#endif
 
 #include "Builder.h"
 #include "DB.h"
@@ -19,7 +23,9 @@
 #include "bitvector_naive.h"
 #include "bitvector_sparse.h"
 #include "vector_facade.h"
-#include "roaring_facade.h"
+#ifdef ROARING
+#   include "roaring_facade.h"
+#endif
 
 #include <sys/time.h>
 
@@ -140,13 +146,17 @@ int main(int argc, char* argv[]) {
         test_performance(#TYPE, db, words, repeat_count);   \
     }
 
+#ifdef ROARING
     TEST("roaring",  IndexedDBAll<roaring_facade>);
+#endif
     TEST("vector",   IndexedDBAll<vector_facade>);
     TEST("naive",    IndexedDBAll<bitvector_naive>);
     TEST("tracking", IndexedDBAll<bitvector_tracking>);
     TEST("sparse",   IndexedDBAll<bitvector_sparse>);
 
+#ifdef ROARING
     TEST("roaring",  IndexedDBSmallest<roaring_facade>);
+#endif
     TEST("vector",   IndexedDBSmallest<vector_facade>);
     TEST("naive",    IndexedDBSmallest<bitvector_naive>);
     TEST("tracking", IndexedDBSmallest<bitvector_tracking>);
