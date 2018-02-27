@@ -19,7 +19,7 @@ public:
         : size(size_) {}
 
     index_type&& capture() {
-        index.update_first_and_last();
+        index.update_internal_structures();
         return std::move(index);
     }
 

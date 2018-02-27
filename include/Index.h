@@ -33,7 +33,7 @@ public:
     }
 
 public:
-    void update_first_and_last() {
+    void update_internal_structures() {
         for (auto& item: map) {
             item.second.bv.update_internal_structures();
         }
