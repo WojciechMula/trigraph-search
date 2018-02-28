@@ -62,9 +62,9 @@ Collection load(const char* path) {
 }
 
 
-void test_performance(const char* name, const DB& db, const Collection& words, int repeat_count) {
+void test_performance(const DB& db, const Collection& words, int repeat_count) {
 
-    printf("searching in %s (%d times)... ", name, repeat_count); fflush(stdout);
+    printf("\tsearching (%d times)... ", repeat_count); fflush(stdout);
     volatile int k = repeat_count;
     volatile int result = 0;
     uint64_t best_time = std::numeric_limits<uint64_t>::max();
@@ -86,11 +86,11 @@ DBTYPE create(const Collection& collection) {
     Builder<typename DBTYPE::bitvector_type> builder(collection.size());
 
     {
-        printf("building..."); fflush(stdout);
+        printf("\tbuilding..."); fflush(stdout);
         const auto t1 = gettime();
         builder.add(collection);
         const auto t2 = gettime();
-        printf("OK, %d ms\n", t2 - t1);
+        printf("%d ms\n", t2 - t1);
     }
 
     return {collection, builder.capture()};
@@ -142,8 +142,9 @@ int main(int argc, char* argv[]) {
 
 #define TEST(KEYWORD, TYPE)                                 \
     if (enabled(KEYWORD)) {                                 \
+        printf("%s\n", #TYPE);                              \
         const auto db = create<TYPE>(input);                \
-        test_performance(#TYPE, db, words, repeat_count);   \
+        test_performance(db, words, repeat_count);          \
     }
 
     if (true) {
