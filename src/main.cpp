@@ -2,6 +2,7 @@
 #include <string>
 #include <optional>
 #include <limits>
+#include <chrono>
 #include <fstream>
 
 #include <cassert>
@@ -27,13 +28,10 @@
 #   include "roaring_facade.h"
 #endif
 
-#include <sys/time.h>
+using Clock = std::chrono::steady_clock;
 
-unsigned gettime() {
-	struct timeval tv;
-	gettimeofday(&tv, NULL);
-
-	return (tv.tv_sec * 1000000 + tv.tv_usec)/1000;
+auto elapsed(const Clock::time_point& t1, const Clock::time_point& t2) {
+    return std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
 }
 
 
@@ -41,7 +39,7 @@ Collection load(const char* path) {
     Collection coll;
 
     printf("loading %s... ", path); fflush(stdout);
-    const auto t1 = gettime();
+    const auto t1 = Clock::now();
 
     std::fstream f;
     f.exceptions(std::ifstream::badbit);
@@ -55,8 +53,8 @@ Collection load(const char* path) {
         }
     }
 
-    const auto t2 = gettime();
-    printf("%lu rows, %d ms\n", coll.size(), t2 - t1);
+    const auto t2 = Clock::now();
+    printf("%lu rows, %lu ms\n", coll.size(), elapsed(t1, t2));
 
     return coll;
 }
@@ -67,14 +65,14 @@ void test_performance(const DB& db, const Collection& words, int repeat_count) {
     printf("\tsearching (%d times)... ", repeat_count); fflush(stdout);
     volatile int k = repeat_count;
     volatile int result = 0;
-    uint64_t best_time = std::numeric_limits<uint64_t>::max();
+    Clock::rep best_time = std::numeric_limits<Clock::rep>::max();
     while (k--) {
-        const uint64_t t1 = gettime();
+        const auto t1 = Clock::now();
         for (const auto& word: words) {
             result += db.matches(word);
         }
-        const uint64_t t2 = gettime();
-        best_time = std::min(best_time, t2 - t1);
+        const auto t2 = Clock::now();
+        best_time = std::min(best_time, elapsed(t1, t2));
     }
     printf("%d match(es), %lu ms\n", result, best_time);
 }
@@ -87,10 +85,10 @@ DBTYPE create(const Collection& collection) {
 
     {
         printf("\tbuilding..."); fflush(stdout);
-        const auto t1 = gettime();
+        const auto t1 = Clock::now();
         builder.add(collection);
-        const auto t2 = gettime();
-        printf("%d ms\n", t2 - t1);
+        const auto t2 = Clock::now();
+        printf("%lu ms\n", elapsed(t1, t2));
     }
 
     return {collection, builder.capture()};
