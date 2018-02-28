@@ -7,7 +7,7 @@
 #include <cassert>
 #include <cstring>
 
-#define ROARING
+//#define ROARING
 
 #ifdef ROARING
 #   include <roaring.c>
@@ -16,8 +16,8 @@
 #include "Builder.h"
 #include "DB.h"
 #include "NaiveDB.h"
-#include "IndexedDBAll.h"
-#include "IndexedDBSmallest.h"
+#include "IndexedDB.h"
+#include "combiner/all.h"
 
 #include "bitvector_tracking.h"
 #include "bitvector_naive.h"
@@ -146,21 +146,41 @@ int main(int argc, char* argv[]) {
         test_performance(#TYPE, db, words, repeat_count);   \
     }
 
+    if (true) {
 #ifdef ROARING
-    TEST("roaring-all",  IndexedDBAll<roaring_facade>);
+        using AndAll_Roaring = IndexedDB<AndAll<roaring_facade>>;
+        TEST("roaring-all",  AndAll_Roaring);
 #endif
-    TEST("vector-all",   IndexedDBAll<vector_facade>);
-    TEST("naive-all",    IndexedDBAll<bitvector_naive>);
-    TEST("tracking-all", IndexedDBAll<bitvector_tracking>);
-    TEST("sparse-all",   IndexedDBAll<bitvector_sparse>);
+        using AndAll_Vector = IndexedDB<AndAll<vector_facade>>;
+        TEST("vector-all", AndAll_Vector);
 
+        using AndAll_Bitvector = IndexedDB<AndAll<bitvector_naive>>;
+        TEST("naive-all", AndAll_Bitvector);
+
+        using AndAll_BitvectorTracking = IndexedDB<AndAll<bitvector_tracking>>;
+        TEST("tracking-all", AndAll_BitvectorTracking);
+
+        using AndAll_BitvectorSparse = IndexedDB<AndAll<bitvector_sparse>>;
+        TEST("sparse-all", AndAll_BitvectorSparse);
+    }
+
+    if (false) {
 #ifdef ROARING
-    TEST("roaring-smallest",  IndexedDBSmallest<roaring_facade>);
+        using PickCheapest_Roaring = IndexedDB<PickCheapest<roaring_facade>>;
+        TEST("roaring-cheapest",  PickCheapest_Roaring);
 #endif
-    TEST("vector-smallest",   IndexedDBSmallest<vector_facade>);
-    TEST("naive-smallest",    IndexedDBSmallest<bitvector_naive>);
-    TEST("tracking-smallest", IndexedDBSmallest<bitvector_tracking>);
-    TEST("sparse-smallest",   IndexedDBSmallest<bitvector_sparse>);
+        using PickCheapest_Vector = IndexedDB<PickCheapest<vector_facade>>;
+        TEST("vector-cheapest", PickCheapest_Vector);
+
+        using PickCheapest_Bitvector = IndexedDB<PickCheapest<bitvector_naive>>;
+        TEST("naive-cheapest", PickCheapest_Bitvector);
+
+        using PickCheapest_BitvectorTracking = IndexedDB<PickCheapest<bitvector_tracking>>;
+        TEST("tracking-cheapest", PickCheapest_BitvectorTracking);
+
+        using PickCheapest_BitvectorSparse = IndexedDB<PickCheapest<bitvector_sparse>>;
+        TEST("sparse-cheapest", PickCheapest_BitvectorSparse);
+    }
 
     return EXIT_SUCCESS;
 }

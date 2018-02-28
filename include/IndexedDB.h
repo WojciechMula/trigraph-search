@@ -4,17 +4,17 @@
 
 #include <functional>
 
-template <typename BITVECTOR>
-class IndexedDBAll: public NaiveDB {
+template <typename COMBINER>
+class IndexedDB: public NaiveDB {
 public:
-    using bitvector_type = BITVECTOR;
+    using bitvector_type = typename COMBINER::bitvector_type;
     using index_type = Index<bitvector_type>;
 
 protected:
     const index_type index;
 
 public:
-    IndexedDBAll(const Collection& rows_, index_type&& index_)
+    IndexedDB(const Collection& rows_, index_type&& index_)
         : NaiveDB(rows_)
         , index(std::move(index_)) {}
 
@@ -31,14 +31,16 @@ public:
             return matches_len3(word);
         }
 
-        auto bv = get_matches_longer(word);
-        if (!bv.has_value())
+        COMBINER combiner;
+
+        if (!get_matches_longer(word, combiner)) {
             return 0;
+        }
 
         if constexpr (bitvector_type::custom_filter) {
-            return bv.value().filter_out_false_positives(rows, word);
+            return combiner.value().filter_out_false_positives(rows, word);
         } else {
-            return filter_out_false_positives(bv.value(), word);
+            return filter_out_false_positives(combiner.value(), word);
         }
     }
 
@@ -60,12 +62,9 @@ protected:
         }
     }
 
-    std::optional<bitvector_type> get_matches_longer(const std::string& word) const {
+    bool get_matches_longer(const std::string& word, COMBINER& combiner) const {
 
         assert(word.size() > 3);
-
-        const bitvector_type* first = nullptr;
-        std::optional<bitvector_type> result;
 
         for (size_t i=0; i < word.size() - 2; i++) {
             const int32_t b0 = uint8_t(word[i + 0]);
@@ -75,27 +74,14 @@ protected:
 
             auto it = index.map.find(trigram);
             if (it == index.map.end()) {
-                return std::nullopt;
+                return false;
             }
 
-            if (first == nullptr) {
-                first = &it->second.bv;
-            } else if (!result.has_value()) {
-                result = bitvector_type::bit_and(*first, it->second.bv);
-                if (!result.has_value()) {
-                    return std::nullopt;
-                }
-            } else {
-                bool nonempty = bitvector_type::bit_and_inplace(result.value(), it->second.bv);
-                if (!nonempty) {
-                    return std::nullopt;
-                }
-            }
+            if (!combiner.add(it->second.bv))
+                break;
         }
 
-        assert(result.has_value());
-
-        return std::move(result);
+        return combiner.has_value();
     }
 
     size_t filter_out_false_positives(const bitvector_type& bv, const std::string& word) const {

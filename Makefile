@@ -3,8 +3,8 @@
 
 FLAGS=$(CXXFLAGS) -Wall -Wextra -pedantic -std=c++17 -O3 -g -Iinclude -Iroaring
 
-HEADERS=include/*.h
-SRC=
+HEADERS=include/*.h include/combiner/*.h
+SRC=src/main.cpp
 ROARING_ALL=roaring/roaring.h roaring/roaring.hh roaring/roaring.c 
 
 URL=http://download.maxmind.com/download/worldcities/worldcitiespop.txt.gz
@@ -28,8 +28,8 @@ help:
 run_perftest: perftest $(DATA_FILE) $(QUERY_FILE)
 	./$< $(DATA_FILE) $(QUERY_FILE) $(REPEAT_COUNT)
 
-perftest: src/main.cpp $(HEADERS) $(SRC) $(ROARING_ALL)
-	$(CXX) $(FLAGS) src/main.cpp $(SRC) -o $@
+perftest: $(HEADERS) $(SRC) $(ROARING_ALL)
+	$(CXX) $(FLAGS) $(SRC) -o $@
 
 run_unittests: unittests
 	./$<
