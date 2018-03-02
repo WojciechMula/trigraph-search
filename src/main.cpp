@@ -24,6 +24,8 @@
 #include "bitvector_naive.h"
 #include "bitvector_sparse.h"
 #include "vector_facade.h"
+#include "deque_facade.h"
+#include "list_facade.h"
 #ifdef ROARING
 #   include "roaring_facade.h"
 #endif
@@ -152,6 +154,12 @@ int main(int argc, char* argv[]) {
 #endif
         using AndAll_Vector = IndexedDB<AndAll<vector_facade>>;
         TEST("vector-all", AndAll_Vector);
+
+        using AndAll_Deque = IndexedDB<AndAll<deque_facade>>;
+        TEST("deque-all", AndAll_Deque);
+
+        using AndAll_List = IndexedDB<AndAll<list_facade>>;
+        TEST("deque-all", AndAll_List);
 
         using AndAll_Bitvector = IndexedDB<AndAll<bitvector_naive>>;
         TEST("naive-all", AndAll_Bitvector);
