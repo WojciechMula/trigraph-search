@@ -8,7 +8,7 @@
 #include <cassert>
 #include <cstring>
 
-#define ROARING
+//#define ROARING
 
 #ifdef ROARING
 #   include <roaring.c>

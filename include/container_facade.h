@@ -2,6 +2,52 @@
 
 #include <algorithm>
 
+
+template <typename CONTAINER, typename INSERTER>
+void intersect_aux(const CONTAINER& a, const CONTAINER& b, INSERTER output)
+{
+    auto it = b.begin();
+    for (const auto& x: a) {
+        it = std::lower_bound(it, b.end(), x);
+        if (it == b.end()) {
+            return;
+        }
+
+        if (*it == x) {
+            output = x;
+        }
+    }
+}
+
+uint64_t log2(const uint64_t x) {
+    if (x == 0)
+        return 0;
+    
+    return (63 - __builtin_clzl(x));
+}
+
+template <typename CONTAINER, typename INSERTER>
+void intersect(const CONTAINER& a, const CONTAINER& b, INSERTER output)
+{
+    // the cost of linear search
+    const size_t lin = a.size() + b.size();
+
+    // the cost of binary search
+    const size_t bin1 = a.size() * log2(b.size());
+    const size_t bin2 = b.size() * log2(a.size());
+
+    if (bin1 < lin || bin2 < lin) {
+        if (bin1 < bin2)
+            intersect_aux(a, b, output);
+        else
+            intersect_aux(b, a, output);
+    }
+    else {
+        std::set_intersection(a.begin(), a.end(), b.begin(), b.end(), output);
+    }
+}
+
+
 template <template<typename> class CONTAINER, bool append = true, bool has_size = true, bool has_resize = true>
 class container_facade {
 
@@ -87,9 +133,13 @@ private:
                 return std::front_inserter(result.indices);
         };
 
-        std::set_intersection(v1.indices.begin(), v1.indices.end(),
-                              v2.indices.begin(), v2.indices.end(),
-                              get_inserter());
+        if constexpr (has_size) {
+            intersect(v1.indices, v2.indices, get_inserter());
+        } else {
+            std::set_intersection(v1.indices.begin(), v1.indices.end(),
+                                  v2.indices.begin(), v2.indices.end(),
+                                  get_inserter());
+        }
 
         return result;
     }
