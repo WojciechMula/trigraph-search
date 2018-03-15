@@ -60,6 +60,15 @@ public:
         return m_size;
     }
 
+    size_t size_in_bytes() const {
+        size_t total = 0;
+
+        total += sizeof(*this);
+        total += chunks_count() * sizeof(uint64_t);
+
+        return total;
+    }
+
     size_t cardinality() const {
         size_t k = 0;
         for (size_t i=0; i < chunks_count(); i++) {

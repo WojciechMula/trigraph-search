@@ -85,15 +85,18 @@ DBTYPE create(const Collection& collection) {
 
     Builder<typename DBTYPE::bitvector_type> builder(collection.size());
 
-    {
-        printf("\tbuilding..."); fflush(stdout);
-        const auto t1 = Clock::now();
-        builder.add(collection);
-        const auto t2 = Clock::now();
-        printf("%lu ms\n", elapsed(t1, t2));
-    }
+    printf("\tbuilding..."); fflush(stdout);
+    const auto t1 = Clock::now();
+    builder.add(collection);
+    const auto t2 = Clock::now();
 
-    return {collection, builder.capture()};
+    DBTYPE db{collection, builder.capture()};
+
+    const size_t bytes = db.get_index().size_in_bytes();
+    const double MiBs  = bytes / double(1024 * 1024);
+    printf("%lu ms, size %lu B (%0.3f MiB)\n", elapsed(t1, t2), bytes, MiBs);
+
+    return std::move(db);
 }
 
 

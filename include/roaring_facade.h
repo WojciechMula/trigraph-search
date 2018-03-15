@@ -54,6 +54,10 @@ public:
         return m_size;
     }
 
+    size_t size_in_bytes() const {
+        return roaring.getSizeInBytes(false);
+    }
+
     template <typename CALLBACK>
     void visit(CALLBACK /*callback*/) const {
         // I don't know how to call a template-defined callable

@@ -32,6 +32,18 @@ public:
         return map.size();
     }
 
+    size_t size_in_bytes() const {
+        size_t total = 0;
+
+        total += sizeof(map);
+        total += map.size() * sizeof(Item);
+        for (const auto& item: map) {
+            total += item.second.bv.size_in_bytes();
+        }
+
+        return total;
+    }
+
 public:
     void update_internal_structures() {
         for (auto& item: map) {

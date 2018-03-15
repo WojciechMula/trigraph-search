@@ -100,6 +100,22 @@ public:
         return m_size;
     }
 
+    size_t size_in_bytes() const {
+        size_t total = 0;
+
+        total += sizeof(*this);
+        for (const auto& ptr: blocks) {
+            
+            total += sizeof(std::unique_ptr<uint64_t[]>);
+            if (ptr.get()) {
+                total += sizeof(block_type);
+            }
+
+        }
+
+        return total;
+    }
+
     size_t cardinality() const {
         size_t k = 0;
         for (const auto& ptr: blocks) {

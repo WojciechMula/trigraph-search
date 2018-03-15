@@ -96,6 +96,15 @@ public:
         return m_size;
     }
 
+    size_t size_in_bytes() const {
+        size_t total = 0;
+
+        total += sizeof(indices);
+        total += cardinality() * sizeof(uint32_t);
+
+        return total;
+    }
+
     template <typename CALLBACK>
     void visit(CALLBACK callback) const {
         for (auto index: indices) {

@@ -44,6 +44,11 @@ public:
         }
     }
 
+public:
+    const index_type& get_index() const {
+        return index;
+    }
+
 protected:
     size_t matches_len3(const std::string& word) const {
 

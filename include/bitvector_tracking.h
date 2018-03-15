@@ -21,6 +21,11 @@ protected:
         return (size + 63) / 64;
     }
 
+    constexpr size_t chunks_count() const {
+        return chunks_count(m_size);
+    }
+
+
 public:
     bitvector_tracking(size_t n) : bitvector_tracking(n, true) {
         memset(data, 0, chunks_count(m_size) * sizeof(uint64_t));
@@ -30,7 +35,7 @@ public:
         : bitvector_tracking(bv.m_size, true) {
 
         non_empty_chunk = bv.non_empty_chunk;
-        memcpy(data, bv.data, chunks_count(m_size) * sizeof(uint64_t));
+        memcpy(data, bv.data, chunks_count() * sizeof(uint64_t));
     }
 
     bitvector_tracking(bitvector_tracking&& bv)
@@ -67,6 +72,15 @@ public:
         return m_size;
     }
 
+    size_t size_in_bytes() const {
+        size_t total = 0;
+
+        total += sizeof(*this);
+        total += chunks_count() * sizeof(uint64_t);
+
+        return total;
+    }
+
     size_t cardinality() const {
         size_t k = 0;
         for (size_t i=non_empty_chunk.first; i <= non_empty_chunk.last; i++) {
@@ -97,7 +111,7 @@ public:
 
         bool set_first = true;
 
-        const size_t n = chunks_count(m_size);
+        const size_t n = chunks_count();
         for (size_t i=0; i < n; i++) {
             if (data[i] == 0) {
                 continue;
@@ -115,7 +129,7 @@ public:
 private:
     bitvector_tracking(size_t size, bool /**/)
         : m_size(size)
-        , data(new uint64_t[chunks_count(m_size)]) {}
+        , data(new uint64_t[chunks_count()]) {}
 
 public:
     static std::optional<bitvector_tracking> bit_and(const bitvector_tracking& v1, const bitvector_tracking& v2) {
